@@ -1,0 +1,9 @@
+
+<nav>
+  <a routerLink="/">Home</a>
+  <a routerLink="/register" *ngIf="!auth.isAuthenticated()">Register</a>
+  <a routerLink="/login" *ngIf="!auth.isAuthenticated()">Login</a>
+  <span *ngIf="auth.isAuthenticated()">Welcome, {{ user?.username }}</span>
+  <button (click)="logout()" *ngIf="auth.isAuthenticated()">Logout</button>
+</nav>
+<router-outlet></router-outlet>

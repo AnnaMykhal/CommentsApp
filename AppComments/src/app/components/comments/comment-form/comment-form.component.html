@@ -1,0 +1,25 @@
+<form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="userName">User Name</label>
+    <input id="userName" formControlName="userName" type="text" required />
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input id="email" formControlName="email" type="email" required />
+  </div>
+  <div>
+    <label for="homePage">Home Page (Optional)</label>
+    <input id="homePage" formControlName="homePage" type="url" />
+  </div>
+  <div>
+    <label for="captcha">Captcha</label>
+    <input id="captcha" formControlName="captcha" type="text" required />
+    <!-- You can use a third-party CAPTCHA solution or generate your own -->
+  </div>
+  <div>
+    <label for="text">Text</label>
+    <textarea id="text" formControlName="text" required></textarea>
+  </div>
+  <button type="submit" [disabled]="commentForm.invalid">Submit</button>
+</form>
+

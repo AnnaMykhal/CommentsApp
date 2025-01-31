@@ -1,0 +1,14 @@
+<div class="home-container">
+  <h1>Welcome to the Home Page!</h1>
+  <p>This is the landing page of the application.</p>
+
+  <div *ngIf="user; else guest">
+    <h2>Hello, {{ user.username }}!</h2>
+    <p>Welcome back to our app.</p>
+  </div>
+
+  <ng-template #guest>
+    <h2>Guest User</h2>
+    <p>Please <a routerLink="/login">log in</a> to continue.</p>
+  </ng-template>
+</div>

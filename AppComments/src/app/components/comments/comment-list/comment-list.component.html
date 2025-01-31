@@ -1,0 +1,24 @@
+<table>
+  <thead>
+  <tr>
+    <th (click)="onSort('userName')">User Name</th>
+    <th (click)="onSort('email')">E-mail</th>
+    <th (click)="onSort('dateCreated')">Date</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let comment of comments">
+    <td>{{ comment.userName }}</td>
+    <td>{{ comment.email }}</td>
+    <td>{{ comment.dateCreated }}</td>
+    <td [innerHTML]="sanitizeHtml(comment.text)"></td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- Пагінація -->
+<div class="pagination">
+  <button (click)="onPageChange(page - 1)" [disabled]="page <= 1">Prev</button>
+  <span>Page {{ page }}</span>
+  <button (click)="onPageChange(page + 1)">Next</button>
+</div>
