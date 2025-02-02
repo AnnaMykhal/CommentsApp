@@ -40,9 +40,14 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+	  <Content Include="wwwroot/**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="root\profileImages\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -9,7 +9,8 @@ public class CommentResponse
     public DateTime CreatedAt { get; set; } 
     public DateTime? UpdatedAt { get; set; } 
     public Guid? ParentCommentId { get; set; } 
-    public string Username { get; set; } = null!; 
+    public string Username { get; set; } = null!;
+    public string? Email { get; set; }
     public string? ProfileImage { get; set; }
     public string? FileUrl { get; set; } 
     public long? FileSize { get; set; }
@@ -24,7 +25,8 @@ public class CommentResponse
         CreatedAtFormatted = comment.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
         UpdatedAtFormatted = comment.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss");
         ParentCommentId = comment.ParentCommentId;
-        Username = comment.User?.UserName ?? "Unknown";
+        Username = comment.User?.UserName ?? "Anonymous";
+        Email = comment.User?.Email ?? "no-email@example.com";
         ProfileImage = comment.User?.AvatarUrl;
         Replies = comment.Replies
             ?.Select(reply => new CommentResponse(reply))

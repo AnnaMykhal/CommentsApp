@@ -33,14 +33,14 @@ public class CommentService : ICommentService
     {
         //var comments = await _context.Comments
         //    .Where(c => !c.IsDeleted)
-        //    .Include(c => c.User) 
-        //    .Include(c => c.Replies) 
+        //    .Include(c => c.User)
+        //    .Include(c => c.Replies)
         //    .ToListAsync();
 
         var comments = await _context.Comments
               .Where(c => !c.IsDeleted)
-              .Include(c => c.User) 
-              .DefaultIfEmpty()  
+              .Include(c => c.User)
+              .DefaultIfEmpty()
               .Include(c => c.Replies)
               .ToListAsync();
 
@@ -73,7 +73,7 @@ public class CommentService : ICommentService
 
         if (string.IsNullOrEmpty(username))
         {
-            username = "Unknown";
+            username = "Anonymous";
             profileImage = "default-profile-image-path.jpg";
         }
 
@@ -91,7 +91,7 @@ public class CommentService : ICommentService
             CreatedAt = DateTime.UtcNow,
             FilePath = filePath,
             FileExtension = fileType,
-            Username = username ?? "Unknown", 
+            Username = username ?? "Anonymous", 
             UserId = userId
         };
 

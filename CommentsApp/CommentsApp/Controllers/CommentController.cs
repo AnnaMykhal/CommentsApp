@@ -36,16 +36,16 @@ public class CommentController : ControllerBase
     }
 
     // Створення нового коментаря
+   
     [HttpPost]
-    public async Task<ActionResult<CommentResponse>> CreateComment([FromBody] CreateCommentRequest request)
+    public async Task<ActionResult<CommentResponse>> CreateComment([FromForm] CreateCommentRequest request,[FromForm] IFormFile? file)
     {
         if (request == null)
             return BadRequest("Invalid data.");
 
-        var comment = await _commentService.CreateCommentAsync(request);
+        var comment = await _commentService.CreateCommentAsync(request, file);
         return CreatedAtAction(nameof(GetCommentById), new { id = comment.CommentId }, comment);
     }
-
     // Отримання конкретного коментаря за ID
     [HttpGet("{id}")]
     public async Task<ActionResult<CommentResponse>> GetCommentById(Guid id)

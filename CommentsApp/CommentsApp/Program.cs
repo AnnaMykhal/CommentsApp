@@ -14,6 +14,7 @@ using System.Text;
 using System.Security.Claims;
 using SixLabors.ImageSharp;
 using RabbitMQ.Client;
+using Microsoft.Extensions.FileProviders;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +54,17 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAngular",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:4200") 
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            });
+    });
+
     // Налаштування RabbitMQ через DI
     services.AddSingleton<IConnection>(sp =>
     {
@@ -87,15 +99,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
         options.Cookie.HttpOnly = true;
     });
 
-    //services.AddCors(options =>
-    //{
-    //    options.AddPolicy("AllowReactApp",
-    //        builder => builder.WithOrigins("http://localhost:3000")
-    //        .AllowAnyHeader()
-    //        .AllowAnyMethod()
-    //        .AllowCredentials());
-    //});
-    
 
     services.AddControllers()
     .AddJsonOptions(options =>
@@ -176,16 +179,23 @@ void ConfigureMiddleware(WebApplication app)
         app.UseSwaggerUI();
     }
 
-    //app.UseCors("AllowReactApp");
+    app.UseCors("AllowAngular");
+
     app.UseHttpsRedirection();
-    app.UseStaticFiles();
+    //app.UseStaticFiles();
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+        RequestPath = "/profileImages"
+    });
     app.UseRouting();
 
     app.Use(async (context, next) =>
     {
+        Console.WriteLine($"Request path: {context.Request.Path}");
         await next.Invoke();
     });
-
+    
     app.UseSession();
 
     app.UseCookiePolicy(new CookiePolicyOptions

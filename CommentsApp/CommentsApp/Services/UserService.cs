@@ -30,6 +30,7 @@ public class UserService : IUserService
         _logger = logger;
     }
 
+
     public async Task<CreateUserResponse> Create(CreateUserRequest req)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
@@ -49,13 +50,42 @@ public class UserService : IUserService
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        if (user.Id != Guid.Empty)
+        // Якщо аватар був завантажений, додаємо його URL
+        if (!string.IsNullOrEmpty(req.AvatarUrl))
         {
-            string token = _tokenService.GenerateToken(_jwtSettings, user);
-            return new CreateUserResponse( user, token);
+            user.AvatarUrl = req.AvatarUrl;
+            await _context.SaveChangesAsync();
         }
-        throw new Exception("User creation failed.");
+
+        string token = user.Id != Guid.Empty ? _tokenService.GenerateToken(_jwtSettings, user) : null;
+        return new CreateUserResponse(user, token);
     }
+    //public async Task<CreateUserResponse> Create(CreateUserRequest req)
+    //{
+    //    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
+    //    if (existingUser != null)
+    //    {
+    //        _logger.LogInformation($"User with email '{req.Email}' already exists in the database.");
+    //        return null;
+    //    }
+
+    //    if (!IsValidEmail(req.Email))
+    //    {
+    //        throw new ArgumentException("Invalid email format.");
+    //    }
+    //    var user = new User(req);
+    //    user.PasswordHash = PasswordHash.Hash(req.Password);
+
+    //    _context.Users.Add(user);
+    //    await _context.SaveChangesAsync();
+
+    //    if (user.Id != Guid.Empty)
+    //    {
+    //        string token = user.Id != Guid.Empty ? _tokenService.GenerateToken(_jwtSettings, user) : null;
+    //        return new CreateUserResponse(user, token);
+    //    }
+    //    throw new Exception("User creation failed.");
+    //}
     private bool IsValidEmail(string email)
     {
         try
@@ -88,19 +118,31 @@ public class UserService : IUserService
         return new AuthUserResponse(user, token);
     }
 
+    //public async Task<IEnumerable<CreateUserResponse>> GetAll()
+    //{
+    //    var users = await _context.Users.ToListAsync();
+
+    //    var userResponses = users.Select(user =>
+    //    {
+    //        var avatarUrl = GenerateAvatarUrl(user.Id, user.AvatarUrl);
+    //        return new CreateUserResponse(user, null, avatarUrl);
+    //    });
+
+    //    return userResponses;
+    //}
     public async Task<IEnumerable<CreateUserResponse>> GetAll()
     {
         var users = await _context.Users.ToListAsync();
 
         var userResponses = users.Select(user =>
         {
-            var avatarUrl = GenerateAvatarUrl(user.Id, user.AvatarUrl);
+            var avatarUrl = string.IsNullOrEmpty(user.AvatarUrl) ? null : GenerateAvatarUrl(user.Id, user.AvatarUrl);
             return new CreateUserResponse(user, null, avatarUrl);
+            
         });
 
         return userResponses;
     }
-
 
     public async Task<bool> Delete(Guid id)
     {
@@ -122,14 +164,10 @@ public class UserService : IUserService
         if (httpContext == null)
             return null;
 
-        var urlHelperFactory = httpContext.RequestServices.GetService<IUrlHelperFactory>();
-        if (urlHelperFactory == null)
-            return null;
+        var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}";
+        var avatarUrl = $"{baseUrl}{profileImage}";
 
-        var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor());
-        var urlHelper = urlHelperFactory.GetUrlHelper(actionContext);
-
-        return urlHelper.Action("GetAvatar", "Users", new { userId }, httpContext.Request.Scheme);
+        return avatarUrl;
     }
 
     public async Task<string> UploadAvatar(Guid userId, string avatarPath)
