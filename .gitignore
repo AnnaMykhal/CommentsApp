@@ -35,3 +35,5 @@ appsettings.*.json
 # Temporary Files
 *.tmp
 *.temp
+
+/AppComments/
