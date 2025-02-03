@@ -1,1 +1,39 @@
+
+# Загальні
+.DS_Store
+Thumbs.db
+*.log
+
+# Node.js
+node_modules/
+dist/
+build/
+
+# Visual Studio/Code
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core
 bin/
+obj/
+*.dbmdl
+*.pdb
+*.cache
+*.ide
+
+# Docker
+docker-compose.override.yml
+*.env
+
+# AppSettings (секрети та конфігурації)
+appsettings.json
+appsettings.*.json
+
+# Temporary Files
+*.tmp
+*.temp
+

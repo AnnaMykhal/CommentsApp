@@ -1,0 +1,68 @@
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0e1; /* світло-бежевий фон */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #6f6f4f; /* оливково-зелений для заголовка */
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6f6f4f; /* оливковий для міток */
+}
+
+.form-control {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #c0c0a4; /* оливково-бежевий обвод */
+  border-radius: 4px;
+  width: 100%;
+  margin-top: 5px;
+  background-color: #fffaf1; /* дуже світло-бежевий фон для полів */
+  padding-left: 15px;  /* лівий відступ */
+  padding-right: 15px; /* правий відступ */
+  box-sizing: border-box; /* враховує padding і border у ширині елемента */
+}
+
+.form-control:focus {
+  border-color: #8a8a4b; /* оливково-зелений при фокусі */
+  outline: none;
+}
+
+.btn {
+  background-color: rgba(155, 179, 93, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #9e9e6c;
+}
+
+.error-message {
+  color: #d9534f; /* червоний для повідомлень про помилки */
+  text-align: center;
+  margin-top: 10px;
+}

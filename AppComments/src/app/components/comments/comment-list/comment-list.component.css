@@ -1,0 +1,105 @@
+.comment-container {
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #f0f0e1;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.fixed-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: #e8e8d0;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #c0c0a4;
+  text-align: center;
+  color: #333;
+}
+
+th {
+  background-color: #9bb35d;
+  color: white;
+  cursor: pointer;
+}
+
+.comment-row {
+  background-color: #f8f8e8;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #9bb35d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.comment-content {
+  background-color: #f9f9f2;
+  padding: 10px;
+  border-left: 4px solid #9bb35d;
+  color: #222;
+  margin-left: 20px;
+}
+
+.nested-comment-container {
+  padding: 10px;
+  border-left: 3px solid #9bb35d;
+  background-color: #f8f8e8;
+  max-width: calc(100% - 20px); /* Це дозволяє контейнеру бути по ширині коментарів */
+  margin-left: 20px; /* Додаємо відступ для кожного рівня */
+  box-sizing: border-box; /* Щоб відступи не впливали на ширину */
+}
+
+.nested-comment {
+  background-color: #f9f9f2;
+  border-left: 4px solid #9bb35d;
+  color: #222;
+  margin-bottom: 10px;
+  padding-left: 20px;
+}
+
+.nested-comment-row {
+  background-color: rgba(190, 207, 149, 0.9);
+  border-left: 3px solid #9bb35d;
+  padding-left: 60px;  /* Відступ для кожного рівня */
+}
+
+.nested-comment-row .comment-content {
+  margin-left: 0;  /* Щоб уникнути подвійного відступу */
+}
+
+tr.nested-comment-row {
+  padding-left: 20px;
+
+}
+
+.reply-count {
+  cursor: pointer;
+  color: #6b6b3b;
+  font-weight: bold;
+}
+
+.reply-count:hover {
+  text-decoration: underline;
+}

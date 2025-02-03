@@ -1,0 +1,31 @@
+<!--<form (ngSubmit)="register()">-->
+<!--  <input type="text" [(ngModel)]="user.Username" name="username" placeholder="Username" required>-->
+<!--  <input type="email" [(ngModel)]="user.Email" name="email" placeholder="Email" required>-->
+<!--  <input type="password" [(ngModel)]="user.Password" name="password" placeholder="Password" required>-->
+<!--  <button type="submit">Register</button>-->
+<!--  <p *ngIf="errorMessage">{{ errorMessage }}</p>-->
+<!--</form>-->
+
+<div class="register-container">
+  <h2>Create an Account</h2>
+  <form (ngSubmit)="register()" class="register-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" [(ngModel)]="user.Username" name="username" id="username" placeholder="Enter your username" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" [(ngModel)]="user.Email" name="email" id="email" placeholder="Enter your email" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" [(ngModel)]="user.Password" name="password" id="password" placeholder="Enter your password" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </form>
+</div>

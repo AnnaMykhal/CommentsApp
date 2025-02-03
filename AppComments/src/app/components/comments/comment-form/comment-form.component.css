@@ -1,0 +1,264 @@
+/*.comment-form {*/
+/*  max-width: 500px;*/
+/*  margin: 0 auto;*/
+/*  padding: 20px;*/
+/*  background-color: #f0f0e1; !* Світло-бежевий фон *!*/
+/*  border-radius: 8px;*/
+/*  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+/*}*/
+
+/*h2 {*/
+/*  text-align: center;*/
+/*  margin-bottom: 20px;*/
+/*  color: #6f6f4f; !* Оливково-зелений заголовок *!*/
+/*}*/
+
+/*.form-group {*/
+/*  margin-bottom: 15px;*/
+/*}*/
+
+/*.form-group label {*/
+/*  font-size: 14px;*/
+/*  font-weight: 600;*/
+/*  color: #6f6f4f;*/
+/*  display: block;*/
+/*  margin-bottom: 5px;*/
+/*}*/
+
+/*.form-control {*/
+/*  width: 100%;*/
+/*  padding: 10px;*/
+/*  font-size: 16px;*/
+/*  border: 1px solid #c0c0a4; !* Оливково-бежевий обвід *!*/
+/*  border-radius: 4px;*/
+/*  background-color: #fffaf1;*/
+/*  box-sizing: border-box;*/
+/*}*/
+
+/*.form-control:focus {*/
+/*  border-color: #8a8a4b;*/
+/*  outline: none;*/
+/*}*/
+
+/*.error-message {*/
+/*  color: #d9534f;*/
+/*  font-size: 12px;*/
+/*  margin-top: 5px;*/
+/*}*/
+
+/*.captcha-image {*/
+/*  display: block;*/
+/*  margin-bottom: 10px;*/
+/*}*/
+
+/*.file-upload input {*/
+/*  margin-top: 5px;*/
+/*}*/
+
+/*.button-panel {*/
+/*  display: flex;*/
+/*  gap: 5px;*/
+/*  margin-bottom: 10px;*/
+/*}*/
+
+/*.button-panel button {*/
+/*  background-color: #9bb35d;*/
+/*  color: white;*/
+/*  border: none;*/
+/*  padding: 5px 10px;*/
+/*  cursor: pointer;*/
+/*  font-size: 14px;*/
+/*}*/
+
+/*.button-panel button:hover {*/
+/*  background-color: #8a8a4b;*/
+/*}*/
+
+/*.btn {*/
+/*  background-color: rgba(155, 179, 93, 0.9);*/
+/*  color: white;*/
+/*  padding: 10px 20px;*/
+/*  border-radius: 4px;*/
+/*  border: none;*/
+/*  font-size: 16px;*/
+/*  cursor: pointer;*/
+/*  transition: background-color 0.3s;*/
+/*  display: block;*/
+/*  width: 100%;*/
+/*}*/
+
+/*.btn:hover {*/
+/*  background-color: #9e9e6c;*/
+/*}*/
+
+.comment-form-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.parent-comment {
+  background-color: #e8e8d0;
+  padding: 10px;
+  border-left: 4px solid #9bb35d;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.parent-comment blockquote {
+  margin: 5px 0 0;
+  font-style: italic;
+  color: #555;
+}
+
+.comment-form {
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #4a4a4a;
+}
+
+.parent-comment {
+  background: #e8e8e8;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-left: 4px solid #9bb35d;
+}
+
+.parent-comment strong {
+  color: #6b6b3b;
+}
+
+blockquote {
+  margin: 5px 0 0 0;
+  font-style: italic;
+  color: #555;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #6b6b3b;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #c0c0a4;
+  border-radius: 4px;
+  background-color: #fffaf1;
+}
+
+.button-panel {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.button-panel button {
+  background-color: #9bb35d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-panel button:hover {
+  background-color: #8a8a4b;
+}
+
+.btn {
+  background-color: #9bb35d;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.btn:hover {
+  background-color: #8a8a4b;
+}
+
+.horizontal-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* Оформлення CAPTCHA */
+.captcha-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.captcha-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.captcha-text {
+  font-weight: bold;
+  font-size: 20px;
+  background-color: rgba(182, 186, 120, 0.9);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* Оформлення блоку завантаження файлів */
+/*.file-upload {*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*  align-items: center;*/
+/*  text-align: center;*/
+/*}*/
+
+/*.file-upload input {*/
+/*  margin-top: 5px;*/
+/*}*/
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Центруємо кнопку "Вибрати файл" */
+.file-upload input {
+  margin-top: 5px;
+  text-align: center;
+  display: block;
+  width: 100%;
+  max-width: 200px; /* Обмеження ширини */
+}
+.error-message {
+  color: red;
+  font-size: 12px;
+}
