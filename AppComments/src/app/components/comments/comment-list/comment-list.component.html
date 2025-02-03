@@ -1,24 +1,75 @@
-<table>
-  <thead>
-  <tr>
-    <th (click)="onSort('userName')">User Name</th>
-    <th (click)="onSort('email')">E-mail</th>
-    <th (click)="onSort('dateCreated')">Date</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let comment of comments">
-    <td>{{ comment.userName }}</td>
-    <td>{{ comment.email }}</td>
-    <td>{{ comment.dateCreated }}</td>
-    <td [innerHTML]="sanitizeHtml(comment.text)"></td>
-  </tr>
-  </tbody>
-</table>
 
-<!-- Пагінація -->
-<div class="pagination">
-  <button (click)="onPageChange(page - 1)" [disabled]="page <= 1">Prev</button>
-  <span>Page {{ page }}</span>
-  <button (click)="onPageChange(page + 1)">Next</button>
+<div class="comment-container">
+  <table class="fixed-table">
+    <thead>
+    <tr>
+      <th (click)="onSort('username')">User Name</th>
+      <th (click)="onSort('email')">Email</th>
+      <th (click)="onSort('createdAt')">Date</th>
+      <th>Replies</th> <!-- Додаємо стовпець для кількості відповідей -->
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let comment of topLevelComments">
+      <tr class="comment-row">
+        <td>
+          <div class="comment-header">
+            <span class="user-avatar">{{ comment.username[0] }}</span>
+            <span class="username">{{ comment.username }}</span>
+          </div>
+        </td>
+        <td>{{ comment.email }}</td>
+        <td>{{ comment.createdAtFormatted }}</td>
+        <td>
+         <span *ngIf="comment.replyCount && comment.replyCount > 0" class="reply-count"  (click)="toggleReplies(comment)">
+            {{ comment.replyCount }} {{ comment.replyCount === 1 ? 'Reply' : 'Replies' }}
+         </span>
+        </td>
+        <td>
+          <button (click)="replyToComment(comment); $event.stopPropagation()">Reply</button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5">
+          <div class="comment-content" [innerHTML]="sanitizeHtml(comment.content)"></div>
+        </td>
+      </tr>
+
+      <ng-container *ngIf="comment.expanded">
+<!--        <div class="nested-comment-container" [style.margin-left.px]="(comment.depth || 0) * 20">-->
+        <ng-container *ngFor="let reply of getReplies(comment.commentId)">
+
+          <tr class="nested-comment-row">
+            <td>
+              <div class="comment-header">
+                <span class="user-avatar">{{ reply.username[0] }}</span>
+                <span class="username">{{ reply.username }}</span>
+              </div>
+            </td>
+            <td>{{ reply.email }}</td>
+            <td>{{ reply.createdAtFormatted }}</td>
+            <td>
+        <span *ngIf="reply.replyCount && reply.replyCount > 0" class="reply-count" (click)="toggleReplies(reply)">
+          {{ reply.replyCount }} {{ reply.replyCount === 1 ? 'Reply' : 'Replies' }}
+        </span>
+            </td>
+            <td>
+              <button (click)="replyToComment(reply); $event.stopPropagation()">Reply</button>
+            </td>
+          </tr>
+          <tr class="nested-comment-row">
+            <td colspan="5">
+              <div class="comment-content nested-comment" [innerHTML]="sanitizeHtml(reply.content)"></div>
+            </td>
+          </tr>
+        </ng-container>
+<!--        </div>-->
+        </ng-container>
+
+
+    </ng-container>
+    </tbody>
+  </table>
+
 </div>

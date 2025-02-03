@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import {environment} from "../../../environments/environment";
 
 
 interface AuthResponse {
@@ -13,7 +14,7 @@ interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://5017/api/auth';
+  private apiUrl = `${environment.apiUrl}/user`;
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
 
@@ -44,7 +45,21 @@ export class AuthService {
   // getUser(): Observable<any> {
   //   return this.userSubject.asObservable();
   // }
+  // getUser(): Observable<any> {
+  //   return this.user$; // Повертаємо Observable
+  // }
+  // getUser(): Observable<any> {
+  //   if (!this.userSubject.value) { // Якщо юзер ще не завантажений
+  //     this.http.get<any>(`${this.apiUrl}/me`).subscribe(user => this.userSubject.next(user));
+  //   }
+  //   return this.user$;
+  // }
   getUser(): Observable<any> {
-    return this.user$; // Повертаємо Observable
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
+      tap(user => this.userSubject.next(user))
+    );
   }
 }

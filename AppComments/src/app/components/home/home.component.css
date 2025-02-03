@@ -1,16 +1,52 @@
 .home-container {
   text-align: center;
   padding: 20px;
+  background: rgba(211, 230, 163, 0.9); /* Світлий фон для контейнера */
+  border-radius: 10px; /* Закруглені краї */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тінь для кращого вигляду */
 }
 
-h1 {
-  color: #2c3e50;
+.home-container h1 {
+  color: #333; /* Темний колір для заголовка */
+  font-family: 'Arial', sans-serif;
 }
 
-h2 {
-  color: #3498db;
+.home-container p {
+  color: #555; /* Темний, але м'якший для параграфів */
+  font-size: 1.2em;
+  line-height: 1.6;
 }
 
-p {
-  font-size: 1.2rem;
+.home-container h2 {
+  color: #444; /* Колір для субзаголовка */
+}
+
+.home-container a {
+  color: #007bff; /* Синій колір для посилань */
+  text-decoration: none; /* Вилучити підкреслення */
+}
+
+.home-container a:hover {
+  text-decoration: underline; /* Додаємо підкреслення при наведенні */
+}
+
+/* Стилізація для гостьового користувача */
+.home-container .guest-user {
+  color: #777;
+  font-style: italic;
+}
+
+.guest-comment-btn {
+  background-color: rgba(122, 159, 40, 0.9);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.guest-comment-btn:hover {
+  background-color: rgba(100, 119, 59, 0.9);
 }

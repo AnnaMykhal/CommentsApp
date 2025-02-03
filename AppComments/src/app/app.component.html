@@ -1,9 +1,21 @@
 
-<nav>
-  <a routerLink="/">Home</a>
-  <a routerLink="/register" *ngIf="!auth.isAuthenticated()">Register</a>
-  <a routerLink="/login" *ngIf="!auth.isAuthenticated()">Login</a>
-  <span *ngIf="auth.isAuthenticated()">Welcome, {{ user?.username }}</span>
-  <button (click)="logout()" *ngIf="auth.isAuthenticated()">Logout</button>
-</nav>
-<router-outlet></router-outlet>
+<div class="app-container">
+  <nav class="navbar">
+    <div class="logo">
+      <a routerLink="/">💬 CommentHub</a>
+    </div>
+    <div class="nav-links">
+      <a routerLink="/" class="nav-item">Home</a>
+      <a routerLink="/register" class="nav-item" *ngIf="!auth.isAuthenticated()">Register</a>
+      <a routerLink="/login" class="nav-item" *ngIf="!auth.isAuthenticated()">Login</a>
+    </div>
+    <div class="user-info" *ngIf="auth.isAuthenticated()">
+      <span>Welcome, {{ user?.username }}</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
