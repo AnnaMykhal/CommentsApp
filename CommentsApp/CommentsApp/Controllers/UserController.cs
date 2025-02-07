@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CommentsApp.Data;
+using Newtonsoft.Json;
+
 
 namespace CommentsApp.Controllers;
 
@@ -17,35 +19,42 @@ public class UserController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IUserService _userService;
     private readonly TokenService _tokenService;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserService userService, AppDbContext context, TokenService tokenService)
+    public UserController(IUserService userService, AppDbContext context, TokenService tokenService, ILogger<UserController> logger)
     {
         _userService = userService;
         _context = context;
         _tokenService = tokenService;
+        _logger = logger;
     }
 
 
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] CreateUserRequest req, [FromForm] IFormFile avatar)
     {
-        if (string.IsNullOrEmpty(req.Email) || string.IsNullOrEmpty(req.Username) || string.IsNullOrEmpty(req.Password))
+        Console.WriteLine($"User controller req: {JsonConvert.SerializeObject(req)}");
+        if (!ModelState.IsValid)
         {
-            return BadRequest(new { message = "Email, Username, and Password are required" });
+            return BadRequest(new { message = "Invalid input data", details = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         try
-        {
-            var avatarUrl = await HandleAvatarUpload(avatar);
-            Console.WriteLine($"Uploading avatar for user {req.Username}. File: {avatar.FileName}");
-            req.AvatarUrl = avatarUrl; 
+        {// Перевірка, чи є файл
+            if (req.AvatarFile == null || req.AvatarFile.Length == 0)
+            {
+                return BadRequest(new { message = "Avatar file is required" });
+            }
 
+            // Передаємо дані в сервіс для створення користувача та обробки файлу
             var res = await _userService.Create(req);
             return Ok(new { message = "User created successfully" });
         }
         catch (Exception e)
         {
-            return BadRequest(new { message = $"An error occurred: {e.Message}" });
+            _logger.LogError(e, "Error occurred while creating user");
+
+            return StatusCode(500, new { message = "An internal server error occurred.", details = e.Message });
         }
     }
     //[HttpPost]
@@ -113,46 +122,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    //[Authorize]
-    //[HttpPost("upload-avatar")]
-    //public async Task<IActionResult> UploadAvatar([FromForm] IFormFile avatar)
-    //{
-    //    if (!User.Identity.IsAuthenticated)
-    //    {
-    //        return Unauthorized(new { message = "User not authorized" });
-    //    }
 
-    //    if (!int.TryParse(User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value, out int userId))
-    //    {
-    //        return Unauthorized(new { message = "User ID not found in claims" });
-    //    }
-
-    //    var user = await _context.Users.FindAsync(userId);
-    //    if (user == null)
-    //        return BadRequest(new { message = "User not found" });
-
-    //    if (avatar == null || avatar.Length == 0)
-    //        return BadRequest(new { message = "Invalid avatar file" });
-
-    //    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profileImages");
-    //    if (!Directory.Exists(uploadsFolder))
-    //        Directory.CreateDirectory(uploadsFolder);
-
-    //    var fileExtension = Path.GetExtension(avatar.FileName).ToLower();
-    //    var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-    //    var relativePath = $"/profileImages/{uniqueFileName}";
-    //    var absolutePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-    //    using (var stream = new FileStream(absolutePath, FileMode.Create))
-    //    {
-    //        await avatar.CopyToAsync(stream);
-    //    }
-
-    //    var avatarPath = await _userService.UploadAvatar(user.Id, relativePath);
-
-    //    return Ok(new { avatarPath });
-    //}
-    [Authorize]
     [HttpPost("upload-avatar")]
     public async Task<IActionResult> UploadAvatar([FromForm] IFormFile avatar)
     {
@@ -217,20 +187,28 @@ public class UserController : ControllerBase
         if (avatar == null || avatar.Length == 0)
             return null;
 
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profileImages");
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-        Console.WriteLine($"HandleAvatarUpload  uploadsFolder  {uploadsFolder}");
-        var fileExtension = Path.GetExtension(avatar.FileName).ToLower();
-        var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-        var relativePath = $"/profileImages/{uniqueFileName}";
-        var absolutePath = Path.Combine(uploadsFolder, uniqueFileName);
-        Console.WriteLine($"HandleAvatarUpload  absolutePath  {absolutePath}");
-        using (var stream = new FileStream(absolutePath, FileMode.Create))
+        // Викликаємо метод у UserService для завантаження аватара
+        var avatarUrl = await _userService.UploadAvatar(user.Id, avatar);
+
+        return Ok(new { avatarUrl });
+    }
+
+    [HttpGet("avatars/{userId}")]
+    public async Task<IActionResult> GetAvatar(Guid userId)
+    {
+        // Отримуємо шлях до аватарки через UserService
+        var avatarPath = await _userService.GetAvatarUrlAsync(userId);
+
+        // Якщо аватарка не знайдена, повертаємо 404
+        if (string.IsNullOrEmpty(avatarPath))
         {
-            await avatar.CopyToAsync(stream);
+            return NotFound("Avatar not found.");
         }
 
-        return relativePath;
+        // Читання файлу аватарки
+        var fileBytes = await System.IO.File.ReadAllBytesAsync(avatarPath);
+
+        // Повертаємо аватарку як зображення
+        return File(fileBytes, "image/jpeg");
     }
 }

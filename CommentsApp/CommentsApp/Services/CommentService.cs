@@ -7,6 +7,8 @@ using CommentsApp.Services.RabbitMQ;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto;
 using RabbitMQ.Client;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace CommentsApp.Services;
 
@@ -67,45 +69,123 @@ public class CommentService : ICommentService
         return new CommentResponse(comment);
     }
 
+
     public async Task<CommentResponse> CreateCommentAsync(CreateCommentRequest request, IFormFile? file = null)
     {
-        var (username, profileImage) = await GetUserDetailsAsync();
+        Console.WriteLine($"Received comment: {request.Content}");
+        Console.WriteLine($"ParentCommentId: {request.ParentCommentId}");
 
-        if (string.IsNullOrEmpty(username))
+        // **Перевіряємо, чи користувач авторизований**
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usernameClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        Guid? userId = null;
+        string username = request.UserName ?? "Anonymous"; // Дозволяємо ввести ім'я вручну для гостей
+        string profileImage = "/images/default-profile-image.jpg";
+
+        if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var parsedUserId))
         {
-            username = "Anonymous";
-            profileImage = "default-profile-image-path.jpg";
+            userId = parsedUserId;
+            username = usernameClaim ?? "Unknown";
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null && !string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                profileImage = user.AvatarUrl;
+            }
         }
 
-        var (filePath, fileType) = await ProcessFileAsync(file);
+        string relativeFilePath = string.Empty;
+        string fileType = string.Empty;
+        long? fileSize = null;
 
-        // Якщо користувач не авторизований, задаємо значення "Unknown"
-        var userId = string.IsNullOrEmpty(username) ? null : (Guid?)await GetUserIdByUsernameAsync(username);
+        var (UserName, AvatarUrl) = await GetUserDetailsAsync();
+        if (string.IsNullOrEmpty(username))
+        {
+            username = "Unknown";
+            profileImage = "/images/default-profile-image.jpg";
+        }
 
-        // Створюємо новий коментар
+        if (file != null)
+        {
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+
+            // Визначаємо тип файлу та папку
+            var subFolder = IsDocumentFile(fileExtension) ? "documents" :
+                            IsImageFile(fileExtension) ? "images" :
+                            "others";
+
+            fileType = IsDocumentFile(fileExtension) ? "document" :
+                       IsImageFile(fileExtension) ? "image" : "other";
+
+            Console.WriteLine($"File received: {file.FileName}, Extension: {fileExtension}, Type: {fileType}");
+
+            // **Коректний шлях до папки `wwwroot/uploads/{subFolder}`**
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", subFolder);
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            // Абсолютний шлях до файлу
+            var absoluteFilePath = Path.Combine(uploadsFolder, fileName);
+            relativeFilePath = $"/uploads/{subFolder}/{fileName}"; // Шлях для збереження в БД
+            fileSize = file.Length;
+
+            Console.WriteLine($"Saving file to: {absoluteFilePath}");
+
+            try
+            {
+                using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                Console.WriteLine("✅ File successfully saved.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error saving file: {ex.Message}");
+                throw;
+            }
+        }
+        else
+        {
+            Console.WriteLine("⚠️ No file received.");
+        }
+
         var comment = new Comment
         {
             Id = Guid.NewGuid(),
             Text = request.Content,
             ParentCommentId = request.ParentCommentId,
             CreatedAt = DateTime.UtcNow,
-            FilePath = filePath,
+            FilePath = relativeFilePath,
             FileExtension = fileType,
-            Username = username ?? "Anonymous", 
-            UserId = userId
+            FileSize = fileSize,
+            Username = username,
+            UserId = userId // Якщо null – значить анонімний
         };
 
-        // Якщо файл існує, додаємо шлях до черги
-        if (!string.IsNullOrEmpty(filePath))
-        {
-            using var queue = new FileProcessingQueue(_connection, _channel);
-            queue.Enqueue(filePath); // Додаємо завдання в чергу
-        }
 
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
+        Console.WriteLine("📝 Comment saved to database.");
 
         return CreateCommentResponse(comment, profileImage, file);
+    }
+
+
+    // Метод для перевірки, чи це документ
+    private bool IsDocumentFile(string extension)
+    {
+        var documentExtensions = new[] { ".pdf", ".doc", ".docx", ".txt", ".xls", ".xlsx", ".ppt", ".pptx" };
+        return documentExtensions.Contains(extension);
+    }
+
+    // Метод для перевірки, чи це зображення
+    private bool IsImageFile(string extension)
+    {
+        var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
+        return imageExtensions.Contains(extension);
     }
 
     public async Task<CommentResponse?> UpdateCommentAsync(UpdateCommentRequest request, IFormFile? file = null)
@@ -183,22 +263,30 @@ public class CommentService : ICommentService
     {
         if (file == null) return (null, null);
 
-        string? filePath = null;
-        string? fileType = null;
+        string folderPath;
+        string filePath;
+        string fileType;
 
         if (file.ContentType.StartsWith("image"))
         {
+            folderPath = Path.Combine("uploads", "images");
+            Directory.CreateDirectory(folderPath); // Створюємо папку, якщо її немає
+
             filePath = await _fileService.ResizeImageAsync(file);
             fileType = "Image";
         }
         else if (file.ContentType == "text/plain")
         {
+            folderPath = Path.Combine("uploads", "documents");
+            Directory.CreateDirectory(folderPath);
+
             filePath = await _fileService.SaveTextFileAsync(file);
             fileType = "Text";
         }
         else
         {
-            throw new Exception("Unsupported file type.");
+            // Можна просто повернути null, щоб не викликати виняток
+            return (null, null);
         }
 
         return (filePath, fileType);

@@ -20,4 +20,5 @@ public class CreateUserRequest
     public string? HomePage { get; set; }
 
     public string? AvatarUrl { get; set; }
+    public IFormFile? AvatarFile { get; set; }
 }

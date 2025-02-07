@@ -1,4 +1,5 @@
 ﻿using CommentsApp.Entities;
+using Microsoft.VisualBasic.FileIO;
 
 namespace CommentsApp.DTO.Comment;
 
@@ -14,6 +15,7 @@ public class CommentResponse
     public string? ProfileImage { get; set; }
     public string? FileUrl { get; set; } 
     public long? FileSize { get; set; }
+    public string? FileType { get; set; }
     public List<CommentResponse> Replies { get; set; } = new();
 
     public string CreatedAtFormatted { get; set; }
@@ -28,6 +30,10 @@ public class CommentResponse
         Username = comment.User?.UserName ?? "Anonymous";
         Email = comment.User?.Email ?? "no-email@example.com";
         ProfileImage = comment.User?.AvatarUrl;
+        
+        FileUrl = comment.FilePath; 
+        FileSize = comment.FileSize; 
+        FileType = comment.FileExtension;
         Replies = comment.Replies
             ?.Select(reply => new CommentResponse(reply))
             .ToList() ?? new List<CommentResponse>();

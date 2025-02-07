@@ -23,6 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
@@ -47,7 +48,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="root\profileImages\" />
+    <Folder Include="uploads\avatars\" />
+    <Folder Include="uploads\images\" />
+    <Folder Include="uploads\documents\" />
+    <Folder Include="uploads\others\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

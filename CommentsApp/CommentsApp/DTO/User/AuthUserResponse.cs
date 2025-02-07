@@ -9,7 +9,6 @@ public class AuthUserResponse
     public string Username { get; set; }
     public string Email { get; set; }
     public string JwtToken { get; set; }
-    //public bool IsEmailConfirmed { get; set; }
     public string AvatarUrl { get; set; }
     public string HomePage { get; set; }
     public List<CommentResponse> Comments { get; set; }
@@ -22,7 +21,6 @@ public class AuthUserResponse
         JwtToken = token;
         AvatarUrl = user.AvatarUrl;
         HomePage = user.HomePage;
-        //IsEmailConfirmed = user.EmailConfirmed;
         Comments = user.Comments.Select(comment => new CommentResponse
         {
             CommentId = comment.Id,

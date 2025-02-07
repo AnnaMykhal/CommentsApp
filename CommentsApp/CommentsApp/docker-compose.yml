@@ -1,0 +1,66 @@
+﻿services:
+  commentsapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: commentsapp_container
+    ports:
+      - "5017:5017"
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DB_CONNECTION_STRING: "Server=mssql_container,1433;Database=comments_db;User Id=sa;Password=Root8888$;"
+      RABBITMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+      - rabbitmq
+      - mssql
+    command: >
+      /bin/sh -c "/app/wait-for-it.sh rabbitmq_container:5672 --timeout=240 -- /app/wait-for-it.sh mssql_container:1433 --timeout=240 -- dotnet CommentsApp.dll"
+      # command: ["sh", "-c", "/app/wait-for-it.sh rabbitmq_container:5672 --timeout=240 -- /app/wait-for-it.sh mssql_container:1433 --timeout=240 -- dotnet CommentsApp.dll"]
+    networks:
+      - commentsapp_default
+    volumes:
+      - ./uploads:/app/wwwroot/uploads
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql_container
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Root8888$"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - commentsapp_default
+
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - commentsapp_default
+
+volumes:
+  rabbitmq-data:
+    driver: local
+  sql_data:
+
+networks:
+  commentsapp_default:
+    driver: bridge
+
