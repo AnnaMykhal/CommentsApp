@@ -8,6 +8,6 @@ public interface IUserService
     Task<AuthUserResponse> Authenticate(AuthUserRequest req);
     Task<IEnumerable<CreateUserResponse>> GetAll();
     Task<bool> Delete(Guid id);
-    Task<string> UploadAvatar(Guid userId, string avatarPath);
+    Task<string> UploadAvatar(Guid userId, IFormFile avatarFile);
     Task<string> GetAvatarUrlAsync(Guid userId);
 }

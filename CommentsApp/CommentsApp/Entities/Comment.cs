@@ -22,7 +22,7 @@ public class Comment
     [StringLength(100)]
     public string? Url { get; set; }
 
-    [StringLength(10)]
+    [StringLength(255)]
     [RegularExpression(@"^\.(jpg|gif|png|txt)$", ErrorMessage = "Допустимі формати файлів: JPG, GIF, PNG, TXT.")]
     public string? FilePath { get; set; }
 
@@ -30,6 +30,7 @@ public class Comment
         ErrorMessage = "Допустимі розширення файлів: .jpg, .png, .gif, .pdf, .docx.")]
     [StringLength(10)]
     public string? FileExtension { get; set; }
+    [StringLength(255)]
     public long? FileSize { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }

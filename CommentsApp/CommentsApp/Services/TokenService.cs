@@ -39,6 +39,7 @@ public class TokenService
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.Name),
         new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
     };
 
@@ -47,9 +48,10 @@ public class TokenService
             Subject = new ClaimsIdentity(new[]
             {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name),
                     new Claim(ClaimTypes.Email, user.Email)
                 }),
-            Expires = DateTime.UtcNow.AddDays(jwtSettings.ExpiresInMinutes),
+            Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpiresInMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             Issuer = jwtSettings.Issuer,
             Audience = jwtSettings.Audience

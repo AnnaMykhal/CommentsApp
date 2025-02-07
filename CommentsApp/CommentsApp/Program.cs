@@ -23,7 +23,7 @@ builder.Logging.AddConsole();
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Listen(IPAddress.Any, 5017); // Використовуємо порт 5017
+    serverOptions.Listen(IPAddress.Any, 5017); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 5017
 });
 
 // Configure services
@@ -53,7 +53,18 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
-    // Налаштування RabbitMQ через DI
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAngular",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:4200") 
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            });
+    });
+
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RabbitMQ пїЅпїЅпїЅпїЅпїЅ DI
     services.AddSingleton<IConnection>(sp =>
     {
         var factory = new ConnectionFactory()
@@ -66,16 +77,16 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
             HandshakeContinuationTimeout = TimeSpan.FromSeconds(30),
             ContinuationTimeout = TimeSpan.FromSeconds(30)
         };
-        return factory.CreateConnection();  // Підключення до RabbitMQ
+        return factory.CreateConnection();  // ПіпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ RabbitMQ
     });
 
     services.AddSingleton<IModel>(sp =>
     {
         var connection = sp.GetRequiredService<IConnection>();
-        return connection.CreateModel();  // Створення каналу для обміну повідомленнями
+        return connection.CreateModel();  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     });
 
-    // Додавання вашого сервісу для обробки черги
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     services.AddSingleton<FileProcessingQueue>();
 
 
@@ -144,6 +155,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
         options.RequiredLength = 10;
     });
 
+    services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer("Server=localhost,1433;Database=comments_db;User Id=sa;Password=Root8888$;TrustServerCertificate=true;",
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()) // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+);
+
     services.AddScoped<TokenService>();
     services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
     
@@ -194,7 +210,7 @@ void ConfigureMiddleware(WebApplication app)
         Secure = CookieSecurePolicy.Always,
     });
 
-    /// Запуск обробки файлів на фоні
+    /// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
     var fileProcessorService = app.Services.GetRequiredService<FileProcessorService>();
     fileProcessorService.StartProcessing(); 
 

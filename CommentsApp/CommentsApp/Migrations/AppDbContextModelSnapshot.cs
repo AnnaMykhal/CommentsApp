@@ -36,10 +36,11 @@ namespace CommentsApp.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("FilePath")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long?>("FileSize")
+                        .HasMaxLength(255)
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
